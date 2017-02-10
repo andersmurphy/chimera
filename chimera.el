@@ -37,7 +37,16 @@
             (set-cursor-color "#66CD00")
             (setq-default cursor-type 'bar)))
   "NORMAL"
+  ("h" region-previous-char "move left")
   ("i" (deactivate-mark t) "insert" :exit t))
+
+(defun region-previous-char ()
+  "Create a region on the char behind the current point.
+Does nothing if the point is at the beginning of the buffer"
+  (interactive)
+  (when (not (bobp))
+    (call-interactively 'set-mark-command)
+    (call-interactively 'backward-char)))
 
 (provide 'chimera)
 
