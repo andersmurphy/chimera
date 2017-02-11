@@ -38,6 +38,7 @@
             (setq-default cursor-type 'bar)))
   "NORMAL"
   ("h" region-previous-char "move left")
+  ("l" region-next-char "move right")
   ("i" (deactivate-mark t) "insert" :exit t)
   ("<SPC>" (funcall chimera-leader-function) :exit t))
 
@@ -48,6 +49,15 @@ Does nothing if the point is at the beginning of the buffer"
   (when (not (bobp))
     (call-interactively 'set-mark-command)
     (call-interactively 'backward-char)))
+
+(defun region-next-char ()
+  "Create a region on the char in front of the current point.
+Does nothing if the point is at the end of the buffer."
+  (interactive)
+  (when (not (eobp))
+    (call-interactively 'forward-char)
+    (call-interactively 'forward-char)
+    (call-interactively 'region-previous-char)))
 
 (provide 'chimera)
 
