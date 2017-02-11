@@ -28,13 +28,13 @@ This method will move the point to before 't'."
     (region-previous-char)
     (should (equal (point) 4))))
 
-(ert-deftest region-previous-char-handles-beggining-of-buffer ()
+(ert-deftest region-previous-char-handles-begining-of-buffer ()
   "If the point is before the 'T' in 'Text'.
 This method will not create a region."
   (with-temp-buffer
     (insert "Text")
-    (beginning-of-line)
+    (goto-char 1)
     (region-previous-char)
-    (should-error (error "The mark is not set now, so there is no region"))))
+    (should (equal (region-active-p) nil))))
 
 ;;; chimera-test.el ends here
