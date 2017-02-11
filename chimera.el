@@ -38,7 +38,8 @@
             (setq-default cursor-type 'bar)))
   "NORMAL"
   ("h" region-previous-char "move left")
-  ("i" (deactivate-mark t) "insert" :exit t))
+  ("i" (deactivate-mark t) "insert" :exit t)
+  ("<SPC>" (funcall chimera-leader-function) :exit t))
 
 (defun region-previous-char ()
   "Create a region on the char behind the current point.
