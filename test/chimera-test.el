@@ -70,5 +70,37 @@ This method will not create a region."
     (region-next-char)
     (should (equal (region-active-p) nil))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                     ;;
+;; region-current-char ;;
+;;                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest region-current-char-creates-correct-region ()
+  "If the point is before the 'T' in 'Text'.
+This method will create a region around the 'T'."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (should (equal (region-beginning) 1))
+    (should (equal (region-end) 2))))
+
+(ert-deftest region-current-char-doesnt-move-point ()
+  "If the point is before the 'T' in 'Text'.
+This method will not move the point."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (should (equal (point) 1))))
+
+(ert-deftest region-current-char-handles-end-of-buffer ()
+  "If the point is after the 't' in 'Text'.
+This method will not create a region."
+  (with-temp-buffer
+    (insert "Text")
+    (region-current-char)
+    (should (equal (region-active-p) nil))))
 
 ;;; chimera-test.el ends here

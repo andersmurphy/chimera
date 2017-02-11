@@ -25,7 +25,8 @@
                                 :idle 0.5)
   ("d" (progn
          (delete-char -1)
-         (chimera/body))))
+         (chimera/body)
+         (region-current-char))))
 
 (defhydra chimera
   (:foreign-keys warn
@@ -56,6 +57,14 @@ Does nothing if the point is at the end of the buffer."
   (interactive)
   (when (not (eobp))
     (call-interactively 'forward-char)
+    (call-interactively 'forward-char)
+    (call-interactively 'region-previous-char)))
+
+(defun region-current-char ()
+  "Create a region on the char in front of the current point.
+Does nothing if the point is at the end of the buffer."
+  (interactive)
+  (when (not (eobp))
     (call-interactively 'forward-char)
     (call-interactively 'region-previous-char)))
 
