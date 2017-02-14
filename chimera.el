@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'hydra)
+
 (global-set-key (kbd "f") 'chimera-change-state/body)
 
 (defcustom chimera-leader-function 'show-no-leader-function-set-message
@@ -37,12 +38,13 @@
    :post  (progn
             (set-cursor-color "#66CD00")
             (setq-default cursor-type 'bar)))
-  "NORMAL"
+  "Chimera"
   ("h" region-previous-char "move left")
+  ("j" region-below-char "move down")
   ("k" region-above-char "move up")
   ("l" region-next-char "move right")
-  ("i" (deactivate-mark t) "insert" :exit t)
-  ("<SPC>" (funcall chimera-leader-function) :exit t))
+  ("i" (deactivate-mark t) "insert before" :exit t)
+  ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
 (defun region-previous-char ()
   "Create a region on the char behind the current point.
@@ -72,9 +74,29 @@ Does nothing if the point is at the end of the buffer."
 (defun region-above-char ()
   "Create a region on the char above and in front of the current point."
   (interactive)
-  (call-interactively 'previous-line)
-  (call-interactively 'forward-char)
-  (call-interactively 'region-previous-char))
+  (when (not (is-first-line-in-buffer))
+    (call-interactively 'previous-line)
+    (call-interactively 'forward-char)
+    (call-interactively 'region-previous-char)))
+
+(defun region-below-char ()
+  "Create a region on the char below and in front of the current point."
+  (interactive)
+  (when (not (is-last-line-in-buffer))
+    (call-interactively 'next-line)
+    (if (not (eobp))
+        (progn
+           (call-interactively 'forward-char)
+           (call-interactively 'region-previous-char))
+      (call-interactively 'set-mark-command))))
+
+(defun is-first-line-in-buffer ()
+  "Return true if point is on the first line in the buffer."
+  (equal (count-lines (point-min) (point)) 0))
+
+(defun is-last-line-in-buffer ()
+  "Return true if point is on the last line in the buffer."
+  (equal (count-lines (point) (point-max)) 0))
 
 (provide 'chimera)
 
