@@ -5,15 +5,19 @@
 ;;; Code:
 (load-file "chimera.el")
 
+;; Ensure transient mark mode is active. This is needed so that
+;; region-active-p can be used to determine whether the buffer
+;; is active or not.
+(setq transient-mark-mode t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                      ;;
 ;; region-previous-char ;;
 ;;                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ert-deftest region-previous-char-creates-correct-region ()
-  "If the point is after the 't' in 'Text'.
-This method will create a region around the 't'"
+(ert-deftest region-previous-char-creates-region ()
+  "Creates a region around the previous character."
   (with-temp-buffer
     (insert "Text")
     (region-previous-char)
@@ -21,21 +25,19 @@ This method will create a region around the 't'"
     (should (equal (region-end) 5))))
 
 (ert-deftest region-previous-char-moves-point ()
-  "If the point is after the 't' in 'Text'.
-This method will move the point to before 't'."
+  "Moves point to before previous character."
   (with-temp-buffer
     (insert "Text")
     (region-previous-char)
     (should (equal (point) 4))))
 
-(ert-deftest region-previous-char-handles-begining-of-buffer ()
-  "If the point is before the 'T' in 'Text'.
-This method will not create a region."
+(ert-deftest region-previous-char-handles-beginning-of-buffer ()
+  "Doesn't create region if point is at beginning of buffer."
   (with-temp-buffer
     (insert "Text")
     (goto-char 1)
     (region-previous-char)
-    (should-error (region-beginning))))
+    (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;                  ;;
@@ -43,9 +45,8 @@ This method will not create a region."
 ;;                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(ert-deftest region-next-char-creates-correct-region ()
-  "If the point is before the 'T' in Text'.
-This method will create a region around the 'e'"
+(ert-deftest region-next-char-creates-region ()
+  "Creates a region around the previous character."
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
@@ -54,8 +55,7 @@ This method will create a region around the 'e'"
     (should (equal (region-end) 3))))
 
 (ert-deftest region-next-char-moves-point ()
-  "If the point is before the 'T' in 'Text'.
-This method will move the point to before 'e'."
+  "Moves point to before next character."
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
@@ -63,12 +63,11 @@ This method will move the point to before 'e'."
     (should (equal (point) 2))))
 
 (ert-deftest region-next-char-handles-end-of-buffer ()
-  "If the point is after the 't' in 'Text'.
-This method will not create a region."
+  "Doesn't create region if point is at end of buffer."
   (with-temp-buffer
     (insert "Text")
     (region-next-char)
-    (should-error (region-beginning))))
+    (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     ;;
@@ -76,9 +75,8 @@ This method will not create a region."
 ;;                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ert-deftest region-current-char-creates-correct-region ()
-  "If the point is before the 'T' in 'Text'.
-This method will create a region around the 'T'."
+(ert-deftest region-current-char-creates-region ()
+  "Creates a region around the character in front of the point."
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
@@ -87,8 +85,7 @@ This method will create a region around the 'T'."
     (should (equal (region-end) 2))))
 
 (ert-deftest region-current-char-doesnt-move-point ()
-  "If the point is before the 'T' in 'Text'.
-This method will not move the point."
+  "Doesn't move point."
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
@@ -96,22 +93,21 @@ This method will not move the point."
     (should (equal (point) 1))))
 
 (ert-deftest region-current-char-handles-end-of-buffer ()
-  "If the point is after the 't' in 'Text'.
-This method will create a region around the 't'."
+  "Doesn't create region if point is at end of buffer."
   (with-temp-buffer
     (insert "Text")
     (goto-char 5)
-    (should-error (region-beginning))))
+    (region-current-char)
+    (should-not (region-active-p))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                     ;;
-;; region-above-char   ;;
-;;                     ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+;;                   ;;
+;; region-above-char ;;
+;;                   ;;
+;;;;;;;;;;;;;;;;;;;;;;;
 
-(ert-deftest region-above-char-creates-correct-region ()
-  "If the point is before the 't' in 'two'.
-This method will create a region around the 'T' in 'Text'."
+(ert-deftest region-above-char-creates-region ()
+  "Creates region around character below current character."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 9)
@@ -120,8 +116,7 @@ This method will create a region around the 'T' in 'Text'."
     (should (equal (region-end) 2))))
 
 (ert-deftest region-above-char-moves-point ()
-  "If the point is before the 't' in 'two'.
-This method will move the point to before the 'T' in 'Text'."
+  "Moves point to before character below current character."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 9)
@@ -129,13 +124,12 @@ This method will move the point to before the 'T' in 'Text'."
     (should (equal (point) 1))))
 
 (ert-deftest region-above-char-handles-first-line-in-buffer ()
-  "If the point is before the 'T' in 'Text'.
-This method will not create a region."
+  "Doesn't create region if on first line in buffer."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char (point-min))
     (region-above-char)
-    (should-error (region-beginning))))
+    (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     ;;
@@ -143,9 +137,8 @@ This method will not create a region."
 ;;                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(ert-deftest region-below-char-creates-correct-region ()
-  "If the point is before the 'T' in 'Text'.
-This method will create a region around the 't' in 'two'."
+(ert-deftest region-below-char-creates-region ()
+  "Creates region around character above current character."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 1)
@@ -154,8 +147,7 @@ This method will create a region around the 't' in 'two'."
     (should (equal (region-end) 10))))
 
 (ert-deftest region-below-char-moves-point ()
-  "If the point is before the 'T' in 'Text'.
-This method will move the point to before the 't' in 'two'."
+  "Moves point to before character above current character."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 1)
@@ -163,17 +155,15 @@ This method will move the point to before the 't' in 'two'."
     (should (equal (point) 9))))
 
 (ert-deftest region-below-char-handles-last-line-in-buffer ()
-  "If the point is after the 'o' in 'two'.
-This method will not create a region."
+  "Doesn't create region if on last line in buffer."
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char (point-max))
     (region-below-char)
-   (should-error (region-beginning))))
+   (should-not (region-active-p))))
 
 (ert-deftest region-below-char-handles-last-line-in-buffer-being-empty ()
-  "If the region is around the 'w' in 'two'.
-This method will not create a region from 't' until the end of the buffer."
+  "Doesn't create region from current character to last line if last line is empty."
   (with-temp-buffer
     (insert "Text on\ntwo lines\n")
     (goto-char 10)
@@ -181,5 +171,53 @@ This method will not create a region from 't' until the end of the buffer."
     (region-below-char)
     (should (equal (region-beginning) 19))
     (should (equal (region-end) 19))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                     ;;
+;; insert-after-region ;;
+;;                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest insert-after-region-moves-pointn ()
+  "Moves point to beginning of region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (insert-after-region)
+    (should (equal (point) 2))))
+
+(ert-deftest insert-after-deactivates-region ()
+  "Deactivate region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (insert-after-region)
+    (should-not (region-active-p))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                      ;;
+;; insert-before-region ;;
+;;                      ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest insert-before-region-moves-point ()
+  "Moves point to beginning of region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (insert-before-region)
+    (should (equal (point) 1))))
+
+(ert-deftest insert-before-deactivates-region ()
+  "Deactivates region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (region-current-char)
+    (insert-before-region)
+    (should-not (region-active-p))))
 
 ;; chimera-test.el ends here

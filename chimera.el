@@ -21,29 +21,31 @@
   :type 'function)
 
 (defhydra chimera-change-state (:color blue
-                                :body-pre (insert "f")
-                                :timeout 0.4
-                                :idle 0.5)
+                              :body-pre (insert "f")
+                              :timeout 0.4
+                              :idle 0.5)
   ("d" (progn
          (delete-char -1)
-         (chimera/body)
-         (region-current-char))))
+         (setq deactivate-mark nil)
+         (chimera/body))))
 
 (defhydra chimera
   (:foreign-keys warn
    :columns 3
    :body-pre   (progn
                  (set-cursor-color "#EEAD0E")
-                 (setq-default cursor-type 'box))
+                 (setq-default cursor-type 'box)
+                 (region-current-char))
    :post  (progn
             (set-cursor-color "#66CD00")
             (setq-default cursor-type 'bar)))
-  "Chimera"
+  "Normal"
+  ("a" insert-after-region "insert after" :exit t)
   ("h" region-previous-char "move left")
   ("j" region-below-char "move down")
   ("k" region-above-char "move up")
   ("l" region-next-char "move right")
-  ("i" (deactivate-mark t) "insert before" :exit t)
+  ("i" insert-before-region "insert before" :exit t)
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
 (defun region-previous-char ()
@@ -97,6 +99,22 @@ Does nothing if the point is at the end of the buffer."
 (defun is-last-line-in-buffer ()
   "Return true if point is on the last line in the buffer."
   (equal (count-lines (point) (point-max)) 0))
+
+(defun insert-after-region ()
+  "Move point to end of region."
+  (interactive)
+  (if (region-active-p)
+      (goto-char (region-end))
+    (goto-char (point)))
+  (deactivate-mark t))
+
+(defun insert-before-region ()
+  "Move point to end of region."
+  (interactive)
+  (if (region-active-p)
+      (goto-char (region-beginning))
+    (goto-char (point)))
+  (deactivate-mark t))
 
 (provide 'chimera)
 
