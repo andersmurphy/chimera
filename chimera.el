@@ -125,6 +125,15 @@ Does nothing if the point is at the end of the buffer."
   (deactivate-mark t)
   (call-interactively 'avy-goto-word-1))
 
+(defun chimera-delete-region ()
+  "Delete region current region.
+Then create region around next char."
+  (interactive)
+  (call-interactively 'kill-region)
+  (if (eobp)
+      (call-interactively 'chimera-region-previous-char)
+    (call-interactively 'chimera-region-current-char)))
+
 (provide 'chimera)
 
 ;;; chimera.el ends here

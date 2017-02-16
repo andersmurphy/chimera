@@ -220,4 +220,40 @@
     (chimera-insert-before-region)
     (should-not (region-active-p))))
 
+;;;;;;;;;;;;;;;;;;;
+;;               ;;
+;; delete-region ;;
+;;               ;;
+;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest delete-region-kills-region ()
+  "Kills active region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (chimera-region-current-char)
+    (chimera-delete-region)
+    (should (equal (buffer-string) "ext"))))
+
+(ert-deftest delete-region-creates-region ()
+  "Creates region around current character after killing region."
+  (with-temp-buffer
+    (insert "Text")
+    (beginning-of-line)
+    (chimera-region-current-char)
+    (chimera-delete-region)
+    (should (equal (region-beginning) 1))
+    (should (equal (region-end) 2))))
+
+(ert-deftest delete-region-handles-end-of-buffer ()
+  "Creates region around previous character if at end of buffer."
+  (with-temp-buffer
+    (insert "Text")
+    (goto-char 4)
+    (chimera-region-current-char)
+    (chimera-delete-region)
+    (should (equal (region-beginning) 3))
+    (should (equal (region-end) 4))))
+
+
 ;; chimera-test.el ends here
