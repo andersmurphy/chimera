@@ -41,15 +41,16 @@
             (set-cursor-color "#66CD00")
             (setq-default cursor-type 'bar)))
   "Normal"
-  ("a" chimera-insert-after-region "insert after" :exit t)
+  ("a" (chimera-insert (region-end)) "insert after" :exit t)
   ("d" chimera-delete-region "delete region")
   ("g" chimera-goto-word "goto word")
   ("h" chimera-region-previous-char "move left")
   ("j" chimera-region-below-char "move down")
   ("k" chimera-region-above-char "move up")
   ("l" chimera-region-next-char "move right")
-  ("i" chimera-insert-before-region "insert before" :exit t)
-  ("p" chimera-paste-after-region "paste after region")
+  ("i" (chimera-insert (region-beginning)) "insert before" :exit t)
+  ("p" (chimera-paste (region-end)) "paste after region")
+  ("P" (chimera-paste (region-beginning)) "paste before region")
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
 (defun chimera-region-previous-char ()
@@ -107,7 +108,7 @@ Does nothing if the point is at the end of the buffer."
 (defun chimera-insert (position)
   "Move point to POSITION and insert if the region is active.
 Otherwise insert at 'point'.  POSITION should be either
-'end-of-region' or 'beginning of region'."
+'region-end' or 'region-beginning'."
   (interactive)
   (if (region-active-p)
       (goto-char position)
@@ -129,25 +130,29 @@ Then create region around next char."
       (call-interactively 'chimera-region-previous-char)
     (call-interactively 'chimera-region-current-char)))
 
-(defvar chimera-stored-region-end nil)
-(defvar chimera-stored-region-beginning nil)
+(setq chimera-stored-region-beginning (make-marker))
+(set-marker-insertion-type chimera-stored-region-beginning t)
+(setq chimera-stored-region-end (make-marker))
 
 (defun chimera-store-region ()
   "Store current region."
-  (setq chimera-stored-region-beginning (region-beginning))
-  (setq chimera-stored-region-end (region-end)))
+  (set-marker chimera-stored-region-beginning (region-beginning))
+  (set-marker chimera-stored-region-end (region-end)))
 
 (defun chimera-restore-region ()
   "Store current region."
   (set-mark  chimera-stored-region-end)
+  (set-marker chimera-stored-region-end nil)
   (goto-char chimera-stored-region-beginning)
+  (set-marker chimera-stored-region-beginning nil)
   (setq deactivate-mark nil))
 
-(defun chimera-paste-after-region ()
-  "Paste last 'kill-ring' item after current region."
+(defun chimera-paste (position)
+  "Paste last 'kill-ring' at POSITION if the region is active.
+POSITION should be either 'region-end' or 'region-beginning'."
   (interactive)
   (chimera-store-region)
-  (goto-char (region-end))
+  (goto-char position)
   (yank)
   (chimera-restore-region))
 

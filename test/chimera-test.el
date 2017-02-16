@@ -276,41 +276,76 @@
     (chimera-restore-region)
     (should (equal (point) 4))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;
-;;                    ;;
-;; paste-after-region ;;
-;;                    ;;
-;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;
+;;       ;;
+;; paste ;;
+;;       ;;
+;;;;;;;;;;;
 
 (ert-deftest paste-after-region-inserts-text ()
   "Pastes last kill ring item after the current region."
   (with-temp-buffer
     (insert "Text")
-    (kill-whole-line)
+    (kill-region 1 5)
     (insert "Paste")
     (chimera-region-previous-char)
-    (chimera-paste-after-region)
+    (chimera-paste (region-end))
     (should (equal (buffer-string) "PasteText"))))
 
 (ert-deftest paste-after-region-stays-where-it-is ()
   "Region stays where it is."
   (with-temp-buffer
     (insert "Text")
-    (kill-whole-line)
+    (kill-region 1 5)
     (insert "Paste")
     (chimera-region-previous-char)
-    (chimera-paste-after-region)
+    (chimera-paste (region-end))
     (should (equal (region-beginning) 5))
-    (should (equal (region-end) 6))))
+    (should (equal (region-end) 6))
+    (should (equal (buffer-string) "PasteText"))))
 
 (ert-deftest paste-after-region-point-stays-at-beginning-of-region ()
   "Point stays at beginning of region."
   (with-temp-buffer
     (insert "Text")
-    (kill-whole-line)
+    (kill-region 1 5)
     (insert "Paste")
     (chimera-region-previous-char)
-    (chimera-paste-after-region)
+    (chimera-paste (region-end))
     (should (equal (point) 5))))
+
+(ert-deftest paste-before-region-inserts-text ()
+  "Pastes last kill ring item before the current region."
+  (with-temp-buffer
+    (insert "Paste")
+    (kill-region 1 6)
+    (insert "Text")
+    (beginning-of-line)
+    (chimera-region-current-char)
+    (chimera-paste (region-beginning))
+    (should (equal (buffer-string) "PasteText"))))
+
+(ert-deftest paste-before-region-stays-where-it-is ()
+  "Region stays where it is."
+  (with-temp-buffer
+    (insert "Paste")
+    (kill-region 1 6)
+    (insert "Text")
+    (beginning-of-line)
+    (chimera-region-current-char)
+    (chimera-paste (region-beginning))
+    (should (equal (region-beginning) 6))
+    (should (equal (region-end) 7))))
+
+(ert-deftest paste-before-region-point-stays-at-beginning-of-region ()
+  "Point stays at beginning of region."
+  (with-temp-buffer
+    (insert "Paste")
+    (kill-region 1 6)
+    (insert "Text")
+    (beginning-of-line)
+    (chimera-region-current-char)
+    (chimera-paste (region-beginning))
+    (should (equal (point) 6))))
 
 ;; chimera-test.el ends here
