@@ -93,12 +93,13 @@
     (should (equal (point) 1))))
 
 (ert-deftest region-current-char-handles-end-of-buffer ()
-  "Doesn't create region if point is at end of buffer."
+  "If point is at end of buffer region previous character."
   (with-temp-buffer
     (insert "Text")
     (goto-char 5)
     (chimera-region-current-char)
-    (should-not (region-active-p))))
+    (should (equal (region-beginning) 4))
+    (should (equal (region-end) 5))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;                   ;;
@@ -163,13 +164,13 @@
    (should-not (region-active-p))))
 
 (ert-deftest region-below-char-handles-last-line-in-buffer-being-empty ()
-  "Doesn't create region from current character to last line if last line is empty."
+  "Doesn't create region around previous character if last line is empty."
   (with-temp-buffer
     (insert "Text on\ntwo lines\n")
     (goto-char 10)
     (chimera-region-current-char)
     (chimera-region-below-char)
-    (should (equal (region-beginning) 19))
+    (should (equal (region-beginning) 18))
     (should (equal (region-end) 19))))
 
 ;;;;;;;;;;;;
@@ -347,5 +348,61 @@
     (chimera-region-current-char)
     (chimera-paste (region-beginning))
     (should (equal (point) 6))))
+
+;;;;;;;;;;
+;;      ;;
+;; undo ;;
+;;      ;;
+;;;;;;;;;;
+
+(ert-deftest undo-undoes-last-action ()
+  "Undo undoes last action, ignores region."
+  (with-temp-buffer
+    (setq buffer-undo-list nil )
+    (insert "Undo")
+    (undo-boundary)
+    (insert "Paste")
+    (chimera-undo)
+    (should (equal (buffer-string) "Undo"))))
+
+(ert-deftest undo-regions-current-char ()
+  "Undo creates a region around current character."
+  (with-temp-buffer
+    (setq buffer-undo-list nil )
+    (insert "Undo")
+    (undo-boundary)
+    (insert "Paste")
+    (chimera-undo)
+    (should (equal (region-beginning) 4))
+    (should (equal (region-end) 5))))
+
+;;;;;;;;;;
+;;      ;;
+;; redo ;;
+;;      ;;
+;;;;;;;;;;
+
+(ert-deftest undo-undoes-last-action ()
+  "Redo redoes last undone action, ignores region."
+  (with-temp-buffer
+    (setq buffer-undo-list nil )
+    (insert "Redo")
+    (undo-boundary)
+    (insert "Undo")
+    (chimera-undo)
+    (chimera-redo)
+    (should (equal (buffer-string) "RedoUndo"))))
+
+(ert-deftest undo-regions-current-char ()
+  "Redo creates a region around current character."
+  (with-temp-buffer
+    (setq buffer-undo-list nil )
+    (insert "Redo")
+    (undo-boundary)
+    (insert "Undo")
+    (chimera-undo)
+    (chimera-redo)
+    (should (equal (region-beginning) 5))
+    (should (equal (region-end) 6))))
 
 ;; chimera-test.el ends here

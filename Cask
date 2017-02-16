@@ -9,4 +9,5 @@
  (depends-on "ert-runner")
  (depends-on "el-mock")
  (depends-on "hydra")
- (depends-on "avy"))
+ (depends-on "avy")
+ (depends-on "undo-tree"))

@@ -13,6 +13,7 @@
 
 (require 'hydra)
 (require 'avy)
+(require 'undo-tree)
 
 (global-set-key (kbd "f") 'chimera-change-state/body)
 
@@ -25,10 +26,7 @@
                               :body-pre (insert "f")
                               :timeout 0.4
                               :idle 0.5)
-  ("d" (progn
-         (delete-char -1)
-         (setq deactivate-mark nil)
-         (chimera/body))))
+  ("d" chimera-activate-hydra))
 
 (defhydra chimera
   (:foreign-keys warn
@@ -39,7 +37,8 @@
                  (chimera-region-current-char))
    :post  (progn
             (set-cursor-color "#66CD00")
-            (setq-default cursor-type 'bar)))
+            (setq-default cursor-type 'bar)
+            (deactivate-mark t)))
   "Normal"
   ("a" (chimera-insert (region-end)) "insert after" :exit t)
   ("d" chimera-delete-region "delete region")
@@ -51,8 +50,17 @@
   ("i" (chimera-insert (region-beginning)) "insert before" :exit t)
   ("p" (chimera-paste (region-end)) "paste after region")
   ("P" (chimera-paste (region-beginning)) "paste before region")
+  ("u" chimera-undo "undo")
+  ("U" chimera-redo"redo")
   ("y" copy-region-as-kill "yank")
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
+
+(defun chimera-activate-hydra ()
+  "Activate hydra."
+  (interactive)
+  (delete-char -1)
+  (setq deactivate-mark nil)
+  (chimera/body))
 
 (defun chimera-region-previous-char ()
   "Create a region on the char behind the current point.
@@ -75,7 +83,8 @@ Does nothing if the point is at the end of the buffer."
   "Create a region on the char in front of the current point.
 Does nothing if the point is at the end of the buffer."
   (interactive)
-  (when (not (eobp))
+  (if (eobp)
+      (call-interactively 'chimera-region-previous-char)
     (call-interactively 'forward-char)
     (call-interactively 'chimera-region-previous-char)))
 
@@ -92,11 +101,10 @@ Does nothing if the point is at the end of the buffer."
   (interactive)
   (when (not (chimera-is-last-line-in-buffer))
     (call-interactively 'next-line)
-    (if (not (eobp))
-        (progn
-           (call-interactively 'forward-char)
-           (call-interactively 'chimera-region-previous-char))
-      (call-interactively 'set-mark-command))))
+    (if (eobp)
+        (call-interactively 'chimera-region-previous-char)
+      (call-interactively 'forward-char)
+      (call-interactively 'chimera-region-previous-char))))
 
 (defun chimera-is-first-line-in-buffer ()
   "Return true if point is on the first line in the buffer."
@@ -156,6 +164,22 @@ POSITION should be either 'region-end' or 'region-beginning'."
   (goto-char position)
   (yank)
   (chimera-restore-region))
+
+(defun chimera-undo ()
+  "Deactivate the mark and then perform an undo action."
+  (interactive)
+  (deactivate-mark t)
+  (call-interactively 'undo-tree-undo)
+  (call-interactively 'chimera-region-current-char)
+  (setq deactivate-mark nil))
+
+(defun chimera-redo ()
+  "Deactivate the mark and then perform a redo action."
+  (interactive)
+  (deactivate-mark t)
+  (call-interactively 'undo-tree-redo)
+  (call-interactively 'chimera-region-current-char)
+  (setq deactivate-mark nil))
 
 (provide 'chimera)
 
