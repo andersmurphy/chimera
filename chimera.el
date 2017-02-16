@@ -51,6 +51,7 @@
   ("i" (chimera-insert (region-beginning)) "insert before" :exit t)
   ("p" (chimera-paste (region-end)) "paste after region")
   ("P" (chimera-paste (region-beginning)) "paste before region")
+  ("y" copy-region-as-kill "yank")
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
 (defun chimera-region-previous-char ()
