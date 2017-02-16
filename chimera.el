@@ -36,21 +36,22 @@
    :body-pre   (progn
                  (set-cursor-color "#EEAD0E")
                  (setq-default cursor-type 'box)
-                 (region-current-char))
+                 (chimera-region-current-char))
    :post  (progn
             (set-cursor-color "#66CD00")
             (setq-default cursor-type 'bar)))
   "Normal"
-  ("a" insert-after-region "insert after" :exit t)
-  ("g" goto-word "goto word")
-  ("h" region-previous-char "move left")
-  ("j" region-below-char "move down")
-  ("k" region-above-char "move up")
-  ("l" region-next-char "move right")
-  ("i" insert-before-region "insert before" :exit t)
+  ("a" chimera-insert-after-region "insert after" :exit t)
+  ("d" chimera-delete-region "delete region")
+  ("g" chimera-goto-word "goto word")
+  ("h" chimera-region-previous-char "move left")
+  ("j" chimera-region-below-char "move down")
+  ("k" chimera-region-above-char "move up")
+  ("l" chimera-region-next-char "move right")
+  ("i" chimera-insert-before-region "insert before" :exit t)
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
-(defun region-previous-char ()
+(defun chimera-region-previous-char ()
   "Create a region on the char behind the current point.
 Does nothing if the point is at the beginning of the buffer"
   (interactive)
@@ -58,51 +59,51 @@ Does nothing if the point is at the beginning of the buffer"
     (call-interactively 'set-mark-command)
     (call-interactively 'backward-char)))
 
-(defun region-next-char ()
+(defun chimera-region-next-char ()
   "Create a region on the char in front of the current point.
 Does nothing if the point is at the end of the buffer."
   (interactive)
   (when (not (eobp))
     (call-interactively 'forward-char)
     (call-interactively 'forward-char)
-    (call-interactively 'region-previous-char)))
+    (call-interactively 'chimera-region-previous-char)))
 
-(defun region-current-char ()
+(defun chimera-region-current-char ()
   "Create a region on the char in front of the current point.
 Does nothing if the point is at the end of the buffer."
   (interactive)
   (when (not (eobp))
     (call-interactively 'forward-char)
-    (call-interactively 'region-previous-char)))
+    (call-interactively 'chimera-region-previous-char)))
 
-(defun region-above-char ()
+(defun chimera-region-above-char ()
   "Create a region on the char above and in front of the current point."
   (interactive)
-  (when (not (is-first-line-in-buffer))
+  (when (not (chimera-is-first-line-in-buffer))
     (call-interactively 'previous-line)
     (call-interactively 'forward-char)
-    (call-interactively 'region-previous-char)))
+    (call-interactively 'chimera-region-previous-char)))
 
-(defun region-below-char ()
+(defun chimera-region-below-char ()
   "Create a region on the char below and in front of the current point."
   (interactive)
-  (when (not (is-last-line-in-buffer))
+  (when (not (chimera-is-last-line-in-buffer))
     (call-interactively 'next-line)
     (if (not (eobp))
         (progn
            (call-interactively 'forward-char)
-           (call-interactively 'region-previous-char))
+           (call-interactively 'chimera-region-previous-char))
       (call-interactively 'set-mark-command))))
 
-(defun is-first-line-in-buffer ()
+(defun chimera-is-first-line-in-buffer ()
   "Return true if point is on the first line in the buffer."
   (equal (count-lines (point-min) (point)) 0))
 
-(defun is-last-line-in-buffer ()
+(defun chimera-is-last-line-in-buffer ()
   "Return true if point is on the last line in the buffer."
   (equal (count-lines (point) (point-max)) 0))
 
-(defun insert-after-region ()
+(defun chimera-insert-after-region ()
   "Move point to end of region."
   (interactive)
   (if (region-active-p)
@@ -110,7 +111,7 @@ Does nothing if the point is at the end of the buffer."
     (goto-char (point)))
   (deactivate-mark t))
 
-(defun insert-before-region ()
+(defun chimera-insert-before-region ()
   "Move point to end of region."
   (interactive)
   (if (region-active-p)
@@ -118,7 +119,7 @@ Does nothing if the point is at the end of the buffer."
     (goto-char (point)))
   (deactivate-mark t))
 
-(defun goto-word ()
+(defun chimera-goto-word ()
   "Deactivate mark and then call avy go to word."
   (interactive)
   (deactivate-mark t)

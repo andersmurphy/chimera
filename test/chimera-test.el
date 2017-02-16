@@ -20,7 +20,7 @@
   "Creates a region around the previous character."
   (with-temp-buffer
     (insert "Text")
-    (region-previous-char)
+    (chimera-region-previous-char)
     (should (equal (region-beginning) 4))
     (should (equal (region-end) 5))))
 
@@ -28,7 +28,7 @@
   "Moves point to before previous character."
   (with-temp-buffer
     (insert "Text")
-    (region-previous-char)
+    (chimera-region-previous-char)
     (should (equal (point) 4))))
 
 (ert-deftest region-previous-char-handles-beginning-of-buffer ()
@@ -36,7 +36,7 @@
   (with-temp-buffer
     (insert "Text")
     (goto-char 1)
-    (region-previous-char)
+    (chimera-region-previous-char)
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -50,7 +50,7 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-next-char)
+    (chimera-region-next-char)
     (should (equal (region-beginning) 2))
     (should (equal (region-end) 3))))
 
@@ -59,14 +59,14 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-next-char)
+    (chimera-region-next-char)
     (should (equal (point) 2))))
 
 (ert-deftest region-next-char-handles-end-of-buffer ()
   "Doesn't create region if point is at end of buffer."
   (with-temp-buffer
     (insert "Text")
-    (region-next-char)
+    (chimera-region-next-char)
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,7 +80,7 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
+    (chimera-region-current-char)
     (should (equal (region-beginning) 1))
     (should (equal (region-end) 2))))
 
@@ -89,7 +89,7 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
+    (chimera-region-current-char)
     (should (equal (point) 1))))
 
 (ert-deftest region-current-char-handles-end-of-buffer ()
@@ -97,7 +97,7 @@
   (with-temp-buffer
     (insert "Text")
     (goto-char 5)
-    (region-current-char)
+    (chimera-region-current-char)
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,7 +111,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 9)
-    (region-above-char)
+    (chimera-region-above-char)
     (should (equal (region-beginning) 1))
     (should (equal (region-end) 2))))
 
@@ -120,7 +120,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 9)
-    (region-above-char)
+    (chimera-region-above-char)
     (should (equal (point) 1))))
 
 (ert-deftest region-above-char-handles-first-line-in-buffer ()
@@ -128,7 +128,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char (point-min))
-    (region-above-char)
+    (chimera-region-above-char)
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,7 +142,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 1)
-    (region-below-char)
+    (chimera-region-below-char)
     (should (equal (region-beginning) 9))
     (should (equal (region-end) 10))))
 
@@ -151,7 +151,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char 1)
-    (region-below-char)
+    (chimera-region-below-char)
     (should (equal (point) 9))))
 
 (ert-deftest region-below-char-handles-last-line-in-buffer ()
@@ -159,7 +159,7 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines")
     (goto-char (point-max))
-    (region-below-char)
+    (chimera-region-below-char)
    (should-not (region-active-p))))
 
 (ert-deftest region-below-char-handles-last-line-in-buffer-being-empty ()
@@ -167,8 +167,8 @@
   (with-temp-buffer
     (insert "Text on\ntwo lines\n")
     (goto-char 10)
-    (region-current-char)
-    (region-below-char)
+    (chimera-region-current-char)
+    (chimera-region-below-char)
     (should (equal (region-beginning) 19))
     (should (equal (region-end) 19))))
 
@@ -183,8 +183,8 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
-    (insert-after-region)
+    (chimera-region-current-char)
+    (chimera-insert-after-region)
     (should (equal (point) 2))))
 
 (ert-deftest insert-after-deactivates-region ()
@@ -192,8 +192,8 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
-    (insert-after-region)
+    (chimera-region-current-char)
+    (chimera-insert-after-region)
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -207,8 +207,8 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
-    (insert-before-region)
+    (chimera-region-current-char)
+    (chimera-insert-before-region)
     (should (equal (point) 1))))
 
 (ert-deftest insert-before-deactivates-region ()
@@ -216,8 +216,8 @@
   (with-temp-buffer
     (insert "Text")
     (beginning-of-line)
-    (region-current-char)
-    (insert-before-region)
+    (chimera-region-current-char)
+    (chimera-insert-before-region)
     (should-not (region-active-p))))
 
 ;; chimera-test.el ends here
