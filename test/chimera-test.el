@@ -255,5 +255,68 @@
     (should (equal (region-beginning) 3))
     (should (equal (region-end) 4))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                               ;;
+;; store-region & restore-region ;;
+;;                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest store-and-restore-region-creates-region ()
+  "Restores region to stored state."
+  (with-temp-buffer
+    (insert "Text")
+    (chimera-region-previous-char)
+    (chimera-store-region)
+    (chimera-region-previous-char)
+    (chimera-restore-region)
+    (should (equal (region-beginning) 4))
+    (should (equal (region-end) 5))))
+
+(ert-deftest store-and-restore-region-moves-point ()
+  "Restores point to before the region."
+   (with-temp-buffer
+    (insert "Text")
+    (chimera-region-previous-char)
+    (chimera-store-region)
+    (chimera-region-previous-char)
+    (chimera-restore-region)
+    (should (equal (point) 4))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;                    ;;
+;; paste-after-region ;;
+;;                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(ert-deftest paste-after-region-inserts-text ()
+  "Pastes last kill ring item after the current region."
+  (with-temp-buffer
+    (insert "Text")
+    (kill-whole-line)
+    (insert "Paste")
+    (chimera-region-previous-char)
+    (chimera-paste-after-region)
+    (should (equal (buffer-string) "PasteText"))))
+
+(ert-deftest paste-after-region-stays-where-it-is ()
+  "Region stays where it is."
+  (with-temp-buffer
+    (insert "Text")
+    (kill-whole-line)
+    (insert "Paste")
+    (chimera-region-previous-char)
+    (chimera-paste-after-region)
+    (should (equal (region-beginning) 5))
+    (should (equal (region-end) 6))))
+
+(ert-deftest paste-after-region-point-stays-at-beginning-of-region ()
+  "Point stays at beginning of region."
+  (with-temp-buffer
+    (insert "Text")
+    (kill-whole-line)
+    (insert "Paste")
+    (chimera-region-previous-char)
+    (chimera-paste-after-region)
+    (should (equal (point) 5))))
 
 ;; chimera-test.el ends here

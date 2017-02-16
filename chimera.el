@@ -49,6 +49,7 @@
   ("k" chimera-region-above-char "move up")
   ("l" chimera-region-next-char "move right")
   ("i" chimera-insert-before-region "insert before" :exit t)
+  ("p" chimera-paste-after-region "paste after region")
   ("<SPC>" (funcall chimera-leader-function) "leader" :exit t))
 
 (defun chimera-region-previous-char ()
@@ -133,6 +134,28 @@ Then create region around next char."
   (if (eobp)
       (call-interactively 'chimera-region-previous-char)
     (call-interactively 'chimera-region-current-char)))
+
+(defvar chimera-stored-region-end nil)
+(defvar chimera-stored-region-beginning nil)
+
+(defun chimera-store-region ()
+  "Store current region."
+  (setq chimera-stored-region-beginning (region-beginning))
+  (setq chimera-stored-region-end (region-end)))
+
+(defun chimera-restore-region ()
+  "Store current region."
+  (set-mark  chimera-stored-region-end)
+  (goto-char chimera-stored-region-beginning)
+  (setq deactivate-mark nil))
+
+(defun chimera-paste-after-region ()
+  "Paste last 'kill-ring' item after current region."
+  (interactive)
+  (chimera-store-region)
+  (goto-char (region-end))
+  (yank)
+  (chimera-restore-region))
 
 (provide 'chimera)
 
