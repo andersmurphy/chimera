@@ -172,11 +172,11 @@
     (should (equal (region-beginning) 19))
     (should (equal (region-end) 19))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                     ;;
-;; insert-after-region ;;
-;;                     ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;
+;;        ;;
+;; insert ;;
+;;        ;;
+;;;;;;;;;;;;
 
 (ert-deftest insert-after-region-moves-pointn ()
   "Moves point to beginning of region."
@@ -184,7 +184,7 @@
     (insert "Text")
     (beginning-of-line)
     (chimera-region-current-char)
-    (chimera-insert-after-region)
+    (chimera-insert (region-end))
     (should (equal (point) 2))))
 
 (ert-deftest insert-after-deactivates-region ()
@@ -193,14 +193,8 @@
     (insert "Text")
     (beginning-of-line)
     (chimera-region-current-char)
-    (chimera-insert-after-region)
+    (chimera-insert (region-end))
     (should-not (region-active-p))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                      ;;
-;; insert-before-region ;;
-;;                      ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ert-deftest insert-before-region-moves-point ()
   "Moves point to beginning of region."
@@ -208,7 +202,7 @@
     (insert "Text")
     (beginning-of-line)
     (chimera-region-current-char)
-    (chimera-insert-before-region)
+    (chimera-insert (region-beginning))
     (should (equal (point) 1))))
 
 (ert-deftest insert-before-deactivates-region ()
@@ -217,7 +211,7 @@
     (insert "Text")
     (beginning-of-line)
     (chimera-region-current-char)
-    (chimera-insert-before-region)
+    (chimera-insert (region-beginning))
     (should-not (region-active-p))))
 
 ;;;;;;;;;;;;;;;;;;;

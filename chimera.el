@@ -104,19 +104,13 @@ Does nothing if the point is at the end of the buffer."
   "Return true if point is on the last line in the buffer."
   (equal (count-lines (point) (point-max)) 0))
 
-(defun chimera-insert-after-region ()
-  "Move point to end of region."
+(defun chimera-insert (position)
+  "Move point to POSITION and insert if the region is active.
+Otherwise insert at 'point'.  POSITION should be either
+'end-of-region' or 'beginning of region'."
   (interactive)
   (if (region-active-p)
-      (goto-char (region-end))
-    (goto-char (point)))
-  (deactivate-mark t))
-
-(defun chimera-insert-before-region ()
-  "Move point to end of region."
-  (interactive)
-  (if (region-active-p)
-      (goto-char (region-beginning))
+      (goto-char position)
     (goto-char (point)))
   (deactivate-mark t))
 
