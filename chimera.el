@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'hydra)
+(require 'avy)
 
 (global-set-key (kbd "f") 'chimera-change-state/body)
 
@@ -41,6 +42,7 @@
             (setq-default cursor-type 'bar)))
   "Normal"
   ("a" insert-after-region "insert after" :exit t)
+  ("g" goto-word "goto word")
   ("h" region-previous-char "move left")
   ("j" region-below-char "move down")
   ("k" region-above-char "move up")
@@ -115,6 +117,12 @@ Does nothing if the point is at the end of the buffer."
       (goto-char (region-beginning))
     (goto-char (point)))
   (deactivate-mark t))
+
+(defun goto-word ()
+  "Deactivate mark and then call avy go to word."
+  (interactive)
+  (deactivate-mark t)
+  (call-interactively 'avy-goto-word-1))
 
 (provide 'chimera)
 

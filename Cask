@@ -8,4 +8,5 @@
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock")
- (depends-on "hydra"))
+ (depends-on "hydra")
+ (depends-on "avy"))
