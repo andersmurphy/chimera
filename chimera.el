@@ -17,10 +17,14 @@
 
 (global-set-key (kbd "f") 'chimera-change-state/body)
 
-(defcustom chimera-leader-function 'show-no-leader-function-set-message
+(defcustom chimera-leader-function 'chimera-no-leader-message
   "Optional leader function that can be bound to space."
   :group 'chimera
   :type 'function)
+
+(defun chimera-no-leader-message ()
+  "Message to be shown when the kraken-leader-function variable hasn't been set."
+  (message "You haven not set a leader function."))
 
 (defhydra chimera-change-state (:color blue
                               :body-pre (insert "f")
