@@ -37,8 +37,7 @@
                  (chimera-region-current-char))
    :post  (progn
             (set-cursor-color "#66CD00")
-            (setq-default cursor-type 'bar)
-            (deactivate-mark t)))
+            (setq-default cursor-type 'bar)))
   "Normal"
   ("a" (chimera-insert (region-end)) "insert after" :exit t)
   ("d" chimera-delete-region "delete region")
