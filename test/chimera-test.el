@@ -63,7 +63,7 @@
     (should (equal (point) 2))))
 
 (ert-deftest region-next-char-handles-end-of-buffer ()
-  "Doesn't create region if point is at end of buffer."
+  "Create region on current char if current char is at end of buffer."
   (with-temp-buffer
     (insert "Text")
     (chimera-region-next-char)

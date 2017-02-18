@@ -66,29 +66,28 @@
   (chimera/body))
 
 (defun chimera-region-previous-char ()
-  "Create a region on the char behind the current point.
-Does nothing if the point is at the beginning of the buffer"
+  "Create a region on the char behind the current point."
   (interactive)
   (when (not (bobp))
     (call-interactively 'set-mark-command)
     (call-interactively 'backward-char)))
 
 (defun chimera-region-next-char ()
-  "Create a region on the char in front of the current point.
-Does nothing if the point is at the end of the buffer."
+  "Create a region on the char in front of the current point."
   (interactive)
   (when (not (eobp))
     (call-interactively 'forward-char)
-    (call-interactively 'forward-char)
-    (call-interactively 'chimera-region-previous-char)))
+    (if (eobp)
+        (call-interactively 'chimera-region-current-char)
+      (call-interactively 'forward-char)
+      (call-interactively 'chimera-region-previous-char))))
 
 (defun chimera-region-current-char ()
-  "Create a region on the char in front of the current point.
-Does nothing if the point is at the end of the buffer."
+  "Create a region on the char in front of the current point."
   (interactive)
   (if (eobp)
       (call-interactively 'chimera-region-previous-char)
-    (call-interactively 'forward-char)
+   (call-interactively 'forward-char)
     (call-interactively 'chimera-region-previous-char)))
 
 (defun chimera-region-above-char ()
